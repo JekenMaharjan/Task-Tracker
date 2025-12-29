@@ -4,49 +4,60 @@ import React, { useEffect, useState } from "react";
 import "./globals.css";
 
 const App = () => {
-    const [tasks, setTasks] = useState([
-        {
-            id: 1,
-            title: "Doctors Appointment",
-            dueDate: "Feb 5th at 2:30pm",
-            status: "pending",
-        },
-        {
-            id: 2,
-            title: "Meeting at School",
-            dueDate: "Feb 6th at 1:30pm",
-            status: "done",
-        },
-        {
-            id: 3,
-            title: "Food Shopping",
-            dueDate: "Feb 5th at 2:30pm",
-            status: "pending",
-        },
-    ]);
-
+    const [tasks, setTasks] = useState<
+        { id: number; title: string; dueDate: string; status: "pending" | "done" }[]
+    >([]);
     const [newTask, setNewTask] = useState("");
+    const [newDueDate, setNewDueDate] = useState("");
+    const [filter, setFilter] = useState<"all" | "pending" | "done">("all");
+
+    const [editingTask, setEditingTask] = useState<{
+        id: number;
+        title: string;
+        dueDate: string;
+        status: "pending" | "done";
+    } | null>(null);
+
+
+    const filteredTasks = tasks.filter((task) => {
+        if (filter === "all") return true;
+        return task.status === filter;
+    });
 
     const addTask = () => {
-        if (!newTask.trim()) return;
+        if (!newTask.trim() || !newDueDate) return; // require title and date
 
         setTasks([
             ...tasks,
             {
                 id: Date.now(),
                 title: newTask,
-                dueDate: "Today",
+                dueDate: newDueDate,
                 status: "pending",
             },
         ]);
 
         setNewTask("");
+        setNewDueDate("");
     };
+
+
 
     const deleteTask = (id:number) => {
         setTasks(tasks.filter((task) => task.id !== id));
     };
 
+    const updateTask = () => {
+        if (!editingTask) return;
+
+        setTasks(
+            tasks.map((task) =>
+                task.id === editingTask.id ? editingTask : task
+            )
+        );
+
+        setEditingTask(null); // close popup
+    };
 
     useEffect(() => {
         const storedTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
@@ -57,9 +68,6 @@ const App = () => {
     useEffect(() => {
         localStorage.setItem("tasks", JSON.stringify(tasks));
     }, [tasks]);
-
-
-
 
     return (
         <div className="bg-blue-200 min-h-screen">
@@ -77,22 +85,45 @@ const App = () => {
                 {/* Legend */}
                 <div className="flex justify-between p-2 gap-x-4 text-sm">
                     <div className="relative w-full">
+                        {/* Task Input */}
                         <input
-                            className="border border-gray-300 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 transition-all pl-5 w-full h-15 rounded-3xl"
                             type="text"
+                            className="w-full border border-gray-300 rounded-full pl-4 pr-30 py-4 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 transition"
                             placeholder="What's your next move?"
                             value={newTask}
                             onChange={(e) => setNewTask(e.target.value)}
                         />
 
+                        {/* Date picker with calendar icon */}
+                        <div className="absolute top-1/2 right-25 -translate-y-1/2 flex items-center">
+                            <span
+                                className="cursor-pointer text-gray-500"
+                                onClick={() => {
+                                    const dateInput = document.getElementById("task-date") as HTMLInputElement;
+                                    dateInput?.showPicker(); // open the date picker
+                                }}
+                            >
+                                📅
+                            </span>
+                            <input
+                                type="datetime-local"
+                                id="task-date"
+                                className="hidden"
+                                value={newDueDate}
+                                onChange={(e) => setNewDueDate(e.target.value)}
+                            />
+                        </div>
+
+
+                        {/* Add Button */}
                         <button
                             onClick={addTask}
-                            className="absolute right-2 top-2 bg-green-400 text-white px-5 py-2 rounded cursor-pointer hover:bg-green-500 rounded-3xl text-lg"
+                            className="absolute top-1/2 right-2 -translate-y-1/2 bg-green-400 text-white px-4 py-2 rounded-full cursor-pointer  hover:bg-green-500"
                         >
                             + Add
                         </button>
-
                     </div>
+
                     <div className="flex flex-col justify-center">
                         <div className="flex items-center gap-x-1">
                             <span className="inline-block w-4 h-4 rounded-full bg-green-200 border"></span>
@@ -108,23 +139,48 @@ const App = () => {
                 {/* Filter tasks by status: */}
                 <div>
                     <hr className="my-2 border-gray-300" />
+
                     <p className="text-sm text-gray-600">Filter tasks by status:</p>
-                    <div className="flex gap-x-2 mt-2">
-                        <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded cursor-pointer hover:bg-gray-300 text-sm">
+
+                    <div className="flex gap-2 mb-4">
+                        <button
+                            onClick={() => setFilter("all")}
+                            className={`px-4 cursor-pointer  py-2 rounded ${filter === "all" ? "bg-blue-400 text-white" : "bg-gray-200"
+                                }`}
+                        >
                             All
                         </button>
-                        <button className="bg-green-100 text-green-700 px-4 py-2 rounded cursor-pointer hover:bg-green-200 text-sm">
-                            Done
-                        </button>
-                        <button className="bg-yellow-100 text-yellow-700 px-4 py-2 rounded cursor-pointer hover:bg-yellow-200 text-sm">
+
+                        <button
+                            onClick={() => setFilter("pending")}
+                            className={`px-4 py-2 cursor-pointer rounded ${filter === "pending" ? "bg-yellow-400 text-white" : "bg-gray-200"
+                                }`}
+                        >
                             Pending
                         </button>
+
+                        <button
+                            onClick={() => setFilter("done")}
+                            className={`px-4 py-2 cursor-pointer rounded ${filter === "done" ? "bg-green-400 text-white" : "bg-gray-200"
+                                }`}
+                        >
+                            Done
+                        </button>
+
                     </div>
+
                     <hr className="my-2 border-gray-300" />
+
                 </div>
 
                 {/* Task List */}
-                {tasks.map((task) => (
+                {filteredTasks.length === 0 ? (
+                    <p className="text-center text-gray-500 py-4">
+                        No tasks found.
+                    </p>
+                ) : (null)}
+
+                {filteredTasks.map((task) => (
                     <div
                         key={task.id}
                         className={`p-3 m-2 rounded shadow-sm flex justify-between items-center transition-transform duration-200 ease-out hover:scale-105 ${task.status === "done" ? "bg-green-100 hover:bg-green-200" : "bg-yellow-100 hover:bg-yellow-200"
@@ -132,17 +188,26 @@ const App = () => {
                     >
                         <div>
                             <p className="font-semibold">{task.title}</p>
-                            <p className="text-sm text-gray-600">{task.dueDate}</p>
+                            <p className="text-sm text-gray-600">
+                                {new Date(task.dueDate).toLocaleString([], {
+                                    year: "numeric",
+                                    month: "short",
+                                    day: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit"
+                                })}
+                            </p>
                         </div>
 
                         <div>
                             <span className="flex gap-x-2">
                                 <button
+                                    onClick={() => setEditingTask(task)}
                                     className="bg-blue-400 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-500"
-                                    
                                 >
                                     Edit
                                 </button>
+
 
                                 <button
                                     onClick={() => deleteTask(task.id)}
@@ -155,6 +220,77 @@ const App = () => {
                     </div>
                 ))}
             </div>
+
+            {/* Edit button -> PopUp UI */}
+            {editingTask && (
+                <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg w-96 shadow-lg">
+                        <h2 className="text-xl font-bold mb-4 text-center">
+                            Edit Task
+                        </h2>
+
+                        {/* Title */}
+                        <input
+                            type="text"
+                            className="w-full border p-2 rounded mb-3"
+                            value={editingTask.title}
+                            onChange={(e) =>
+                                setEditingTask({
+                                    ...editingTask,
+                                    title: e.target.value,
+                                })
+                            }
+                        />
+
+                        {/* Due Date */}
+                        <input
+                            type="datetime-local"
+                            className="w-full border p-2 rounded mb-3"
+                            value={editingTask.dueDate}
+                            onChange={(e) =>
+                                setEditingTask({
+                                    ...editingTask,
+                                    dueDate: e.target.value,
+                                })
+                            }
+                        />
+
+
+                        {/* Status */}
+                        <select
+                            className="w-full border p-2 rounded mb-4"
+                            value={editingTask.status}
+                            onChange={(e) =>
+                                setEditingTask({
+                                    ...editingTask,
+                                    status: e.target.value as "pending" | "done",
+                                })
+                            }
+                        >
+                            <option value="pending">Pending</option>
+                            <option value="done">Done</option>
+                        </select>
+
+                        {/* Buttons */}
+                        <div className="flex justify-between">
+                            <button
+                                onClick={() => setEditingTask(null)}
+                                className="bg-gray-300 cursor-pointer px-4 py-2 rounded hover:bg-gray-400"
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                onClick={updateTask}
+                                className="bg-green-500 cursor-pointer text-white px-4 py-2 rounded hover:bg-green-600"
+                            >
+                                Update
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };
