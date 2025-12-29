@@ -1,10 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./globals.css";
 
 const App = () => {
-    const tasks = [
+    const [tasks, setTasks] = useState([
         {
             id: 1,
             title: "Doctors Appointment",
@@ -23,7 +23,43 @@ const App = () => {
             dueDate: "Feb 5th at 2:30pm",
             status: "pending",
         },
-    ];
+    ]);
+
+    const [newTask, setNewTask] = useState("");
+
+    const addTask = () => {
+        if (!newTask.trim()) return;
+
+        setTasks([
+            ...tasks,
+            {
+                id: Date.now(),
+                title: newTask,
+                dueDate: "Today",
+                status: "pending",
+            },
+        ]);
+
+        setNewTask("");
+    };
+
+    const deleteTask = (id:number) => {
+        setTasks(tasks.filter((task) => task.id !== id));
+    };
+
+
+    useEffect(() => {
+        const storedTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+        setTasks(storedTasks);
+    }, []);
+
+
+    useEffect(() => {
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+    }, [tasks]);
+
+
+
 
     return (
         <div className="bg-blue-200 min-h-screen">
@@ -41,10 +77,21 @@ const App = () => {
                 {/* Legend */}
                 <div className="flex justify-between p-2 gap-x-4 text-sm">
                     <div className="relative w-full">
-                        <input className="border border-gray-300 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 transition-all pl-5 w-full h-15 rounded-3xl" type="text" placeholder="What's your next move?" />
-                        <button className="absolute right-2 top-2 bg-green-400 text-white px-5 py-2 rounded cursor-pointer hover:bg-green-500 rounded-3xl text-lg">
+                        <input
+                            className="border border-gray-300 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400 transition-all pl-5 w-full h-15 rounded-3xl"
+                            type="text"
+                            placeholder="What's your next move?"
+                            value={newTask}
+                            onChange={(e) => setNewTask(e.target.value)}
+                        />
+
+                        <button
+                            onClick={addTask}
+                            className="absolute right-2 top-2 bg-green-400 text-white px-5 py-2 rounded cursor-pointer hover:bg-green-500 rounded-3xl text-lg"
+                        >
                             + Add
                         </button>
+
                     </div>
                     <div className="flex flex-col justify-center">
                         <div className="flex items-center gap-x-1">
@@ -96,7 +143,9 @@ const App = () => {
                                 >
                                     Edit
                                 </button>
+
                                 <button
+                                    onClick={() => deleteTask(task.id)}
                                     className="bg-red-400 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-500"
                                 >
                                     Delete
