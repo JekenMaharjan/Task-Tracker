@@ -1,4 +1,4 @@
-# Task Tracker
+# 📋 Task Tracker App
 
 A modern task management web application built with **React** and **Next.js**, designed to help you keep track of tasks efficiently with a clean and intuitive interface.
 
@@ -53,25 +53,25 @@ Follow these steps to run the project locally:
     ```
     
 2. **Install dependencies**
-
-  ```bash
-  cd client
-  npm install
-  ```
-  or with yarn
-  ```bash
-  yarn install
-  ```
+    
+    ```bash
+    cd client
+    npm install
+    ```
+    or with yarn
+    ```bash
+    yarn install
+    ```
 
 3. **Run the development server**
 
-  ```bash
-  npm run dev
-  ```
-or with yarn
-  ```bash
-  yarn dev
-  ```
+    ```bash
+    npm run dev
+    ```
+    or with yarn
+    ```bash
+    yarn dev
+    ```
 
 4. **Open http://localhost:3000 in your browser to view the app.**
 
