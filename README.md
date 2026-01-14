@@ -34,13 +34,9 @@ Technologies used to build this project:
 ## 📦 Features
 
 ✔ Add new tasks  
-
 ✔ Mark tasks complete  
-
 ✔ Remove tasks  
-
 ✔ Persistent state
-
 ✔ Responsive UI
 
 ---
