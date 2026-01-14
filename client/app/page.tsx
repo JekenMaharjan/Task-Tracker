@@ -156,7 +156,7 @@ const App = () => {
                     <div className="flex justify-center gap-2 mb-4">
                         <button
                             onClick={() => setFilter("all")}
-                            className={`px-4 cursor-pointer  py-2 rounded ${filter === "all" ? "bg-blue-400 text-white" : "bg-gray-200"
+                            className={`px-4 cursor-pointer py-2 rounded ${filter === "all" ? "bg-blue-400 hover:bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"
                                 }`}
                         >
                             All
@@ -164,7 +164,7 @@ const App = () => {
 
                         <button
                             onClick={() => setFilter("pending")}
-                            className={`px-4 py-2 cursor-pointer rounded ${filter === "pending" ? "bg-yellow-400 text-white" : "bg-gray-200"
+                            className={`px-4 py-2 cursor-pointer rounded ${filter === "pending" ? "bg-yellow-400 hover:bg-yellow-500 text-white" : "bg-gray-200 hover:bg-gray-300"
                                 }`}
                         >
                             Pending
@@ -172,7 +172,7 @@ const App = () => {
 
                         <button
                             onClick={() => setFilter("done")}
-                            className={`px-4 py-2 cursor-pointer rounded ${filter === "done" ? "bg-green-400 text-white" : "bg-gray-200"
+                            className={`px-4 py-2 cursor-pointer rounded ${filter === "done" ? "bg-green-400 hover:bg-green-500 text-white" : "bg-gray-200 hover:bg-gray-300"
                                 }`}
                         >
                             Done
@@ -194,7 +194,7 @@ const App = () => {
                 {filteredTasks.map((task) => (
                     <div
                         key={task.id}
-                        className={`p-3 m-2 rounded shadow-sm flex justify-between items-center transition-transform duration-200 ease-out hover:scale-105 ${task.status === "done" ? "bg-green-100 hover:bg-green-200" : "bg-yellow-100 hover:bg-yellow-200"
+                        className={`p-3 m-2 rounded shadow-sm flex justify-between items-center transition-transform duration-200 ease-out hover:scale-101 ${task.status === "done" ? "bg-green-100 hover:bg-green-200" : "bg-yellow-100 hover:bg-yellow-200"
                             }`}
                     >
                         <div>
@@ -234,8 +234,8 @@ const App = () => {
 
             {/* Edit button -> PopUp UI */}
             {editingTask && (
-                <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg w-96 shadow-lg">
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+                    <div className="bg-gray-100 p-6 rounded-lg w-96 shadow-lg">
                         <h2 className="text-xl font-bold mb-4 text-center">
                             Edit Task
                         </h2>
@@ -286,7 +286,7 @@ const App = () => {
                         <div className="flex justify-between">
                             <button
                                 onClick={() => setEditingTask(null)}
-                                className="bg-gray-300 cursor-pointer px-4 py-2 rounded hover:bg-gray-400"
+                                className="bg-red-500 text-white cursor-pointer px-4 py-2 rounded hover:bg-red-600"
                             >
                                 Cancel
                             </button>
